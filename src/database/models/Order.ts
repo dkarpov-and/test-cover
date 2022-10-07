@@ -3,6 +3,8 @@ import { sequelizeConnection } from "../config/config";
 
 interface OrderAttributes {
   id: number;
+  firm_id: string;
+  application_parameters: any;
   isPrimary?: string;
   title?: string;
   firstName?: string;
@@ -23,6 +25,8 @@ class Order
   implements OrderAttributes
 {
   public id!: number;
+  public firm_id!: string;
+  public application_parameters!: any;
   public isPrimary!: string;
   public title!: string;
   public firstName!: string;
@@ -44,6 +48,12 @@ Order.init(
       type: DataTypes.INTEGER,
       autoIncrement: true,
       primaryKey: true,
+    },
+    firm_id: {
+      type: DataTypes.STRING,
+    },
+    application_parameters: {
+      type: DataTypes.JSON,
     },
     isPrimary: {
       type: DataTypes.STRING,

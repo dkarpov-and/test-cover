@@ -5,11 +5,11 @@ class CreateOrderController {
   constructor(private createOrder: CreateOrderService) {}
 
   async handle(request: Request, response: Response) {
-    const {
-      payload
-    } = request.body;
+    const { payload } = request.body;
 
     const {
+      firm_id,
+      application_parameters,
       firstName,
       lastName,
       dateOfBirth,
@@ -22,6 +22,8 @@ class CreateOrderController {
     } = payload;
 
     const order = await this.createOrder.execute({
+      firm_id,
+      application_parameters,
       firstName,
       lastName,
       dateOfBirth,

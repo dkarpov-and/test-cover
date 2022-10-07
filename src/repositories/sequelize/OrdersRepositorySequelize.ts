@@ -13,6 +13,8 @@ class OrdersRepositorySequelize implements IOrdersRepository {
   }
 
   async create({
+    firm_id,
+    application_parameters,
     firstName,
     lastName,
     dateOfBirth,
@@ -24,6 +26,8 @@ class OrdersRepositorySequelize implements IOrdersRepository {
     nationalIdType,
   }: any): Promise<any> {
     const order = await Order.create({
+      firm_id,
+      application_parameters,
       firstName,
       lastName,
       dateOfBirth,

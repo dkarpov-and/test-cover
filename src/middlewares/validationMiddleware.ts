@@ -1,7 +1,10 @@
-const yup = require('yup')
+const yup = require("yup");
 
-const validations = require('../validators/commonValidators');
-import { getInfoValidationSchema, getOrderCreatePayloadSchema } from '../validators/createOrderValidator';
+const validations = require("../validators/commonValidators");
+import {
+  getInfoValidationSchema,
+  getOrderCreatePayloadSchema,
+} from "../validators/createOrderValidator";
 class ValidationMiddleware {
   validations: any;
   payload_validation_schema: any;
@@ -41,12 +44,29 @@ class ValidationMiddleware {
   validate = async (req: any, res: any, next: any) => {
     const { payload, action } = req.body;
 
-      if (action !== "CREATE_ORDER") {
-        throw new Error("Invalid action")
-      }
+    if (action !== "CREATE_ORDER") {
+      throw new Error("Invalid action");
+    }
+
+    const validationResult = await this.runValidations([
+      () =>
+        this.payload_validation_schema.validate(payload, {
+          abortEarly: false,
+          context: payload,
+        }),
+    ]);
+
+    if (validationResult.errors.length > 0) {
+      throw new Error(
+        JSON.stringify({
+          error_message: "INPUT_ERROR_OCCURRED",
+          errors: validationResult.errors,
+        })
+      );
+    }
 
     return next();
-  }
+  };
 
   // validate = async (req: any, res: any, next: any) => {
   //   const { payload, action } = req.body;

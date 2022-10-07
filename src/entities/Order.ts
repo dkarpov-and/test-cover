@@ -1,4 +1,6 @@
 class Order {
+  firm_id: string;
+  application_parameters: any;
   isPrimary: string;
   title: string;
   firstName: string;
@@ -10,6 +12,8 @@ class Order {
   taxId: string;
 
   private constructor({
+    firm_id,
+    application_parameters,
     firstName,
     lastName,
     dateOfBirth,
@@ -21,6 +25,8 @@ class Order {
     nationalIdType,
   }: Order) {
     return Object.assign(this, {
+      firm_id,
+      application_parameters,
       firstName,
       lastName,
       dateOfBirth,
@@ -34,6 +40,8 @@ class Order {
   }
 
   static create({
+    firm_id,
+    application_parameters,
     firstName,
     lastName,
     dateOfBirth,
@@ -45,6 +53,8 @@ class Order {
     nationalIdType,
   }: Order) {
     const order = new Order({
+      firm_id,
+      application_parameters,
       firstName,
       lastName,
       dateOfBirth,

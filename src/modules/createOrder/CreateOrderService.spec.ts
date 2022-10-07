@@ -1,3 +1,5 @@
+import { faker } from "@faker-js/faker";
+
 import { Order } from "../../entities/Order";
 import { OrdersRepositoryInMemory } from "../../repositories/in-memory/OrdersRepositoryInMemory";
 import { IOrdersRepository } from "../../repositories/IOrdersRepositories";
@@ -14,34 +16,46 @@ describe("Create order", () => {
 
   it("should be able to create a new order", async () => {
     const orderData: Order = {
-      isPrimary: "true",
-      title: "testtitle",
-      firstName: "testfirstname",
-      lastName: "testlastname",
-      dateOfBirth: "testdateofbirth",
-      nationalId: "testnationalid",
-      nationalIdType: "testnationalidtype",
-      percentageOwnership: 100,
-      taxId: "testtaxid",
+      firm_id: faker.datatype.uuid(),
+      application_parameters: {},
+      isPrimary: faker.helpers.arrayElement(["Y", "N"]),
+      title: faker.random.words(5),
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      dateOfBirth: String(`faker.date.birthdate()`),
+      nationalId: "ssn",
+      percentageOwnership: faker.datatype.number({
+        min: 10,
+        max: 100,
+        precision: 1,
+      }),
+      taxId: "ssn",
+      nationalIdType: "SSN",
     };
 
     const order = await createOrderService.execute(orderData);
 
     expect(order).toHaveProperty("id");
-    expect(order.title).toBe("testtitle");
+    expect(order.title).toBe(orderData.title);
   });
 
   it("should not be able to create an existing order", async () => {
     const orderData: Order = {
-      isPrimary: "true",
+      firm_id: faker.datatype.uuid(),
+      application_parameters: {},
+      isPrimary: faker.helpers.arrayElement(["Y", "N"]),
       title: "test existing title",
-      firstName: "test existing firstname",
-      lastName: "test existing lastname",
-      dateOfBirth: "testdateofbirth",
-      nationalId: "testnationalid",
-      nationalIdType: "testnationalidtype",
-      percentageOwnership: 100,
-      taxId: "testtaxid",
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      dateOfBirth: String(`faker.date.birthdate()`),
+      nationalId: "ssn",
+      percentageOwnership: faker.datatype.number({
+        min: 10,
+        max: 100,
+        precision: 1,
+      }),
+      taxId: "ssn",
+      nationalIdType: "SSN",
     };
 
     await createOrderService.execute(orderData);

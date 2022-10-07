@@ -2,6 +2,8 @@ import { Order } from "../../entities/Order";
 import { IOrdersRepository } from "../../repositories/IOrdersRepositories";
 
 interface IOrderRequest {
+  firm_id: string;
+  application_parameters: any;
   isPrimary: string;
   title: string;
   firstName: string;
@@ -17,6 +19,8 @@ class CreateOrderService {
   constructor(private ordersRepository: IOrdersRepository) {}
 
   async execute({
+    firm_id,
+    application_parameters,
     isPrimary,
     title,
     firstName,
@@ -34,6 +38,8 @@ class CreateOrderService {
     }
 
     const orderCreate = Order.create({
+      firm_id,
+      application_parameters,
       isPrimary,
       title,
       firstName,
