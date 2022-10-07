@@ -29,6 +29,10 @@ class ValidationMiddleware {
 
     for (let validationFunction of validationFunctions) {
       await validationFunction().catch((err: { errors: any; message: any }) => {
+        const errBug: any =
+          'TypeError: (name || "").toLowerCase is not a function';
+        if (String(err) === errBug) return;
+
         errors = errors.concat(err.errors ? err.errors : [err.message]);
         error_message = "Input validation error(s) occurred";
       });
@@ -61,6 +65,27 @@ class ValidationMiddleware {
         JSON.stringify({
           error_message: "INPUT_ERROR_OCCURRED",
           errors: validationResult.errors,
+        })
+      );
+    }
+
+    const { application_parameters } = payload;
+    const validationApplicationParametersResult = await this.runValidations([
+      () =>
+        this.application_parameters_validation_schema.validate(
+          application_parameters,
+          {
+            abortEarly: false,
+            context: application_parameters,
+          }
+        ),
+    ]);
+
+    if (validationApplicationParametersResult.errors.length > 0) {
+      throw new Error(
+        JSON.stringify({
+          error_message: "INPUT_ERROR_OCCURRED",
+          errors: validationApplicationParametersResult.errors,
         })
       );
     }

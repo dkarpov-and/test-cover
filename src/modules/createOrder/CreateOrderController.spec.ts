@@ -8,7 +8,14 @@ describe("Create Order Controller", () => {
       action: "CREATE_ORDER",
       payload: {
         firm_id: faker.datatype.uuid(),
-        application_parameters: {},
+        application_parameters: {
+          first_name: faker.name.firstName(),
+          last_name: faker.name.lastName(),
+          dob: "1979-01-11",
+          nationalId: "ssn",
+          dba_name: "MMISTestHeadnte20211122e",
+          ssn: "123456789",
+        },
         isPrimary: faker.helpers.arrayElement(["Y", "N"]),
         title: faker.random.words(5),
         firstName: faker.name.firstName(),
@@ -58,7 +65,13 @@ describe("Create Order Controller", () => {
       .post("/v1/orders")
       .send({
         firm_id: faker.datatype.uuid(),
-        application_parameters: {},
+        application_parameters: {
+          firstName: faker.name.firstName(),
+          lastName: faker.name.lastName(),
+          dba_name: faker.company.companyName(),
+          dob: faker.date.birthdate(),
+          ssn: "ssn",
+        },
         isPrimary: faker.helpers.arrayElement(["Y", "N"]),
         title: body.payload.title,
         firstName: faker.name.firstName(),
@@ -82,7 +95,13 @@ describe("Create Order Controller", () => {
       action: "UPDATE_ORDER",
       payload: {
         firm_id: faker.datatype.uuid(),
-        application_parameters: {},
+        application_parameters: {
+          firstName: faker.name.firstName(),
+          lastName: faker.name.lastName(),
+          dba_name: faker.company.companyName(),
+          dob: faker.date.birthdate(),
+          ssn: "ssn",
+        },
         isPrimary: faker.helpers.arrayElement(["Y", "N"]),
         title: faker.random.words(5),
         firstName: faker.name.firstName(),
@@ -99,8 +118,6 @@ describe("Create Order Controller", () => {
       },
     };
     const response = await request(app).post("/v1/orders").send(body);
-
-    console.log("response.body", response.body);
 
     expect(response.status).toBe(400);
     expect(response.body).toEqual({ message: "Invalid action" });
@@ -129,6 +146,9 @@ describe("Create Order Controller", () => {
       headnote_fbo_account_number: "config.HP_FBO_ACCOUNT_NUMBER",
       legal_name: "TestName",
       legal_contact_name: "Matt Crampton",
+      first_name: "John",
+      last_name: "Doe",
+      dob: "2010-01-01",
     };
 
     const body = {
@@ -155,5 +175,38 @@ describe("Create Order Controller", () => {
 
     expect(response.status).toBe(200);
     expect(response.body).toHaveProperty("id");
+  });
+
+  it("should not be able to create a new order - no first name", async () => {
+    const body = {
+      action: "UPDATE_ORDER",
+      payload: {
+        firm_id: faker.datatype.uuid(),
+        application_parameters: {
+          last_name: faker.name.lastName(),
+          dob: "1979-01-11",
+          nationalId: "ssn",
+          dba_name: "MMISTestHeadnte20211122e",
+          ssn: "123456789",
+        },
+        isPrimary: faker.helpers.arrayElement(["Y", "N"]),
+        title: faker.random.words(5),
+        firstName: faker.name.firstName(),
+        lastName: faker.name.lastName(),
+        dateOfBirth: faker.date.birthdate(),
+        nationalId: "ssn",
+        percentageOwnership: faker.datatype.number({
+          min: 10,
+          max: 100,
+          precision: 1,
+        }),
+        taxId: "ssn",
+        nationalIdType: "SSN",
+      },
+    };
+    const response = await request(app).post("/v1/orders").send(body);
+
+    expect(response.status).toBe(400);
+    expect(response.body).toEqual({ message: "Invalid action" });
   });
 });

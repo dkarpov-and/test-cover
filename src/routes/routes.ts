@@ -3,19 +3,18 @@ const asyncHandler = require("express-async-handler");
 import { createOrderFactory } from "../modules/createOrder/CreateOrderFactory";
 import { dbInit } from "../database/init";
 
-import { ValidationMiddleware } from '../middlewares/validationMiddleware';
-// import { getOrderCreatePayloadSchema } from '../validators/createOrderValidator'
+import { ValidationMiddleware } from "../middlewares/validationMiddleware";
 
 dbInit();
 
-// const schema = new CreateOrderValidator();
 const validator = new ValidationMiddleware();
-
 const routes = Router();
 
 routes.get("/v1", (request, response) => response.send("DB WORKING - v1"));
-routes.post("/v1/orders", asyncHandler(validator.validate), (request, response) =>
-  createOrderFactory().handle(request, response)
+routes.post(
+  "/v1/orders",
+  asyncHandler(validator.validate),
+  (request, response) => createOrderFactory().handle(request, response)
 );
 
 export { routes };
