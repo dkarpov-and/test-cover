@@ -21,7 +21,7 @@
   },
   "scripts": {
     "dev": "ts-node-dev --exit-child src/server.ts",
-    "test": "jest"
+    "test": "jest --verbose"
   },
   "dependencies": {
     "dotenv": "^10.0.0",

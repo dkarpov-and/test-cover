@@ -10,6 +10,7 @@ const dbDialect = process.env.DB_CONNECTION as Dialect;
 const sequelizeConnection = new Sequelize(dbName, dbUser, dbPassword, {
   host: dbHost,
   dialect: dbDialect,
+  logging: false,
 });
 
 export { sequelizeConnection };

@@ -3,7 +3,12 @@ import request from "supertest";
 import { faker } from "@faker-js/faker";
 
 describe("Create Order Controller", () => {
-  it("should be able to create a new order", async () => {
+  beforeAll(() => {
+    jest.spyOn(console, 'log').mockImplementation(() => {});
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+});
+
+  it("[INTEGRATION 0001] - should be able to create a new order", async () => {
     const body = {
       action: "CREATE_ORDER",
       payload: {
@@ -37,7 +42,7 @@ describe("Create Order Controller", () => {
     expect(response.body).toHaveProperty("id");
   });
 
-  it("should not be able to create an existing order", async () => {
+  it("[INTEGRATION 0002] - should not be able to create an existing order", async () => {
     const body = {
       action: "CREATE_ORDER",
       payload: {
@@ -90,7 +95,7 @@ describe("Create Order Controller", () => {
     expect(response.status).toBe(400);
   });
 
-  it("should not be able to create a new order with invalid action", async () => {
+  it("[INTEGRATION 0003] - should not be able to create a new order with invalid action", async () => {
     const body = {
       action: "UPDATE_ORDER",
       payload: {
@@ -123,7 +128,7 @@ describe("Create Order Controller", () => {
     expect(response.body).toEqual({ message: "Invalid action" });
   });
 
-  it("should be able to create a new order with custom fields", async () => {
+  it("[INTEGRATION 0004] - should be able to create a new order with custom fields", async () => {
     const applicationParams = {
       dba_name: "MMISTestHeadnte20211122e",
       firm_email: "payment_accounts@headnotelaw.com",
@@ -177,36 +182,30 @@ describe("Create Order Controller", () => {
     expect(response.body).toHaveProperty("id");
   });
 
-  it("should not be able to create a new order - no first name", async () => {
+  it("[INTEGRATION 0005] - should not be able to create a new order - invalid application params", async () => {
     const body = {
-      action: "UPDATE_ORDER",
+      action: "CREATE_ORDER",
       payload: {
         firm_id: faker.datatype.uuid(),
         application_parameters: {
-          last_name: faker.name.lastName(),
-          dob: "1979-01-11",
+          first_name: "1",
+          last_name: "1",
+          dob: "10.10.2000",
           nationalId: "ssn",
           dba_name: "MMISTestHeadnte20211122e",
           ssn: "123456789",
         },
-        isPrimary: faker.helpers.arrayElement(["Y", "N"]),
         title: faker.random.words(5),
-        firstName: faker.name.firstName(),
-        lastName: faker.name.lastName(),
-        dateOfBirth: faker.date.birthdate(),
-        nationalId: "ssn",
-        percentageOwnership: faker.datatype.number({
-          min: 10,
-          max: 100,
-          precision: 1,
-        }),
-        taxId: "ssn",
-        nationalIdType: "SSN",
       },
     };
     const response = await request(app).post("/v1/orders").send(body);
 
     expect(response.status).toBe(400);
-    expect(response.body).toEqual({ message: "Invalid action" });
+    expect(JSON.stringify(response.body)).toEqual(
+      JSON.stringify({
+        message:
+          '{"error_message":"INPUT_ERROR_OCCURRED","errors":["last_name must be at least 2 characters","last_name must match the following: \\"/^[a-zA-Z]+$/\\"","first_name must be at least 2 characters","first_name must match the following: \\"/^[a-zA-Z]+$/\\"","dob must match the following: \\"/^\\\\d{4}-\\\\d{2}-\\\\d{2}$/\\"","dob must be in past"]}',
+      })
+    );
   });
 });

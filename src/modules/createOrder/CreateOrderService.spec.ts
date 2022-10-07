@@ -14,7 +14,7 @@ describe("Create order", () => {
     createOrderService = new CreateOrderService(ordersRepository);
   });
 
-  it("should be able to create a new order", async () => {
+  it("[UNIT 0001] - should be able to create a new order", async () => {
     const orderData: Order = {
       firm_id: faker.datatype.uuid(),
       application_parameters: {},
@@ -39,7 +39,7 @@ describe("Create order", () => {
     expect(order.title).toBe(orderData.title);
   });
 
-  it("should not be able to create an existing order", async () => {
+  it("[UNIT 0002] - should not be able to create an existing order", async () => {
     const orderData: Order = {
       firm_id: faker.datatype.uuid(),
       application_parameters: {},
