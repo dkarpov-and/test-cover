@@ -27,29 +27,41 @@ describe("Create Order Controller", () => {
   });
 
   it("should not be able to create an existing order", async () => {
-    await request(app).post("/v1/orders").send({
-      isPrimary: "Y",
-      title: "Owner",
-      firstName: "first_name",
-      lastName: "last_name",
-      dateOfBirth: "dob",
+    const payload = {
+      isPrimary: faker.helpers.arrayElement(["Y", "N"]),
+      title: faker.lorem.word(5),
+      firstName: faker.name.firstName(),
+      lastName: faker.name.lastName(),
+      dateOfBirth: faker.date.birthdate(),
       nationalId: "ssn",
-      percentageOwnership: 100,
+      percentageOwnership: faker.datatype.number({
+        min: 10,
+        max: 100,
+        precision: 1,
+      }),
       taxId: "ssn",
       nationalIdType: "SSN",
-    });
+    };
 
-    const response = await request(app).post("/v1/orders").send({
-      isPrimary: "Y",
-      title: "Owner",
-      firstName: "first_name",
-      lastName: "last_name",
-      dateOfBirth: "dob",
-      nationalId: "ssn",
-      percentageOwnership: 100,
-      taxId: "ssn",
-      nationalIdType: "SSN",
-    });
+    await request(app).post("/v1/orders").send(payload);
+
+    const response = await request(app)
+      .post("/v1/orders")
+      .send({
+        isPrimary: faker.helpers.arrayElement(["Y", "N"]),
+        title: payload.title,
+        firstName: faker.name.firstName(),
+        lastName: faker.name.lastName(),
+        dateOfBirth: faker.date.birthdate(),
+        nationalId: "ssn",
+        percentageOwnership: faker.datatype.number({
+          min: 10,
+          max: 100,
+          precision: 1,
+        }),
+        taxId: "ssn",
+        nationalIdType: "SSN",
+      });
 
     expect(response.status).toBe(400);
   });
