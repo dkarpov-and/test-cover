@@ -1,6 +1,6 @@
-import yup from 'yup';
+const yup = require('yup')
 
-const getOrderCreatePayloadSchema = (validations: any) => yup.object().shape({
+export const getOrderCreatePayloadSchema = (validations: any) => yup.object().shape({
     firm_id: yup
         .string()
         .required()
@@ -9,9 +9,9 @@ const getOrderCreatePayloadSchema = (validations: any) => yup.object().shape({
     application_parameters: yup
         .object()
         .required()
-})
+});
 
-const getInfoValidationSchema = (validations: any) => yup.object().shape({
+export const getInfoValidationSchema = (validations: any) => yup.object().shape({
     last_name: yup
         .string()
         .required()
@@ -41,11 +41,6 @@ const getInfoValidationSchema = (validations: any) => yup.object().shape({
         .string()
         .trim()
         .required()
-        .test('is-valid-ssn', `primary_attorney_ssn must match the following: \"/^[0-9]{9}$/\"`, val => /^[0-9]{9}$/.test(val))
-        .test('is-valid-length', 'primary_attorney_ssn must be exactly 9 digits', val => String(val).length === 9),
-})
-
-module.exports = {
-    OrderInfoValidationSchema: getInfoValidationSchema,
-    OrderCreatePayloadSchema: getOrderCreatePayloadSchema,
-}
+        .test('is-valid-ssn', `primary_attorney_ssn must match the following: \"/^[0-9]{9}$/\"`, (val: any) => /^[0-9]{9}$/.test(val))
+        .test('is-valid-length', 'primary_attorney_ssn must be exactly 9 digits', (val: any) => String(val).length === 9)
+});

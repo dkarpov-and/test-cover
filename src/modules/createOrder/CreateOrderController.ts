@@ -6,6 +6,10 @@ class CreateOrderController {
 
   async handle(request: Request, response: Response) {
     const {
+      payload
+    } = request.body;
+
+    const {
       firstName,
       lastName,
       dateOfBirth,
@@ -15,7 +19,7 @@ class CreateOrderController {
       isPrimary,
       taxId,
       nationalIdType,
-    } = request.body;
+    } = payload;
 
     const order = await this.createOrder.execute({
       firstName,

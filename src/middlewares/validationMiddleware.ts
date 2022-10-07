@@ -1,19 +1,96 @@
+const yup = require('yup')
+
+const validations = require('../validators/commonValidators');
+import { getInfoValidationSchema, getOrderCreatePayloadSchema } from '../validators/createOrderValidator';
 class ValidationMiddleware {
-  private schema: any;
+  validations: any;
+  payload_validation_schema: any;
+  application_parameters_validation_schema: any;
+  // create: any;
 
-  constructor(schema: any) {
-    this.schema = schema;
+  constructor() {
+    this.validations = validations;
+    this.validations.addMixins(yup);
+    // this.create = this.create.bind(this);
+    this.payload_validation_schema = getOrderCreatePayloadSchema(
+      this.validations
+    );
+    this.application_parameters_validation_schema = getInfoValidationSchema(
+      this.validations
+    );
   }
 
-  async validate(req: any, res: any, next: any): Promise<any> {
-    const body = req.body;
-    try {
-      await this.schema.validate(body);
-      next();
-    } catch (error: any) {
-      return res.status(400).json({ message: error.message });
+  async runValidations(validationFunctions: any) {
+    let errors: any[] = [];
+    let error_message = null;
+
+    for (let validationFunction of validationFunctions) {
+      await validationFunction().catch((err: { errors: any; message: any }) => {
+        errors = errors.concat(err.errors ? err.errors : [err.message]);
+        error_message = "Input validation error(s) occurred";
+      });
     }
+
+    if (errors.length === 1) {
+      return { error_message: errors[0], errors };
+    }
+
+    return { errors, error_message };
   }
+
+  validate = async (req: any, res: any, next: any) => {
+    const { payload, action } = req.body;
+
+      if (action !== "CREATE_ORDER") {
+        throw new Error("Invalid action")
+      }
+
+    return next();
+  }
+
+  // validate = async (req: any, res: any, next: any) => {
+  //   const { payload, action } = req.body;
+
+  //   if (action !== "CREATE_ORDER") {
+  //     return { error_message: "Invalid action" }
+  //   }
+
+  //   const validationResult = await this.runValidations([
+  //     () =>
+  //       this.payload_validation_schema.validate(payload, {
+  //         abortEarly: false,
+  //         context: payload,
+  //       }),
+  //   ]);
+
+  //   const { application_parameters } = payload;
+  //   const validationApplicationParametersResult = await this.runValidations([
+  //     () =>
+  //       this.application_parameters_validation_schema.validate(
+  //         application_parameters,
+  //         {
+  //           abortEarly: false,
+  //           context: application_parameters,
+  //         }
+  //       ),
+  //   ]);
+
+  //   if (validationResult.errors.length > 0) {
+  //     return {
+  //       error_message: "INPUT_ERROR_OCCURRED",
+  //       errors: validationResult.errors,
+  //     }
+  //   }
+
+  //   if (validationApplicationParametersResult.errors.length > 0) {
+  //     return {
+  //       error_message: "INPUT_ERROR_OCCURRED",
+  //       errors: validationApplicationParametersResult.errors,
+  //     }
+  //   }
+
+  //   return next();
+  // };
 }
 
 export { ValidationMiddleware };
