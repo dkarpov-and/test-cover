@@ -1,14 +1,7 @@
-# package directories
-reports
 node_modules
-jspm_packages
-
-# Serverless directories
-.serverless
 .env
-junit.xml
-
-scripts/dynamo_db/temp-config.json
-
-# IDE
-.vscode
+coverage
+./coverage
+/coverage
+./coverage/*
+/coverage/*
